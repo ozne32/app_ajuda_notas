@@ -1,7 +1,7 @@
 <?php
-require 'app_ajuda_notas/conexao.php';
-require 'app_ajuda_notas/usuario.service.php';
-require 'app_ajuda_notas/usuario.model.php';
+require '../app_ajuda_notas/conexao.php';
+require '../app_ajuda_notas/usuario.service.php';
+require '../app_ajuda_notas/usuario.model.php';
 $acao = isset($_GET['acao'])? $_GET['acao']:$acao;
 
 //adicionar usuário

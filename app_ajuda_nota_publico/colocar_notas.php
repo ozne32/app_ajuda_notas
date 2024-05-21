@@ -83,7 +83,7 @@ $id = $_SESSION['id'];
                 </thead>
                 <tbody>
                     <?
-                    require_once '../../app_ajuda_notas/conexao.php';
+                    require_once '../app_ajuda_notas/conexao.php';
                     $conexao = new Conexao;
                     $query = 'SELECT 
                     m.nome_materia, u.nome, um.acertos, um.erros, s.nome_simulado

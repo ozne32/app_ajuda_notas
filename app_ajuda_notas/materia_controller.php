@@ -1,7 +1,7 @@
 <?php
-require 'app_ajuda_notas/conexao.php';
-require 'app_ajuda_notas/materia.model.php';
-require 'app_ajuda_notas/materia.service.php';
+require '../app_ajuda_notas/conexao.php';
+require '../app_ajuda_notas/materia.model.php';
+require '../app_ajuda_notas/materia.service.php';
 $acao = isset($_GET['acao'])?$_GET['acao']:$acao;
 // fazer a página de colocar notas, onde o usuário vai ir colocando as suas notas, e a cada atualizada ele vai 
 // mudando qual matéria ele está falando 
