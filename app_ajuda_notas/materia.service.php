@@ -50,4 +50,58 @@ class MateriaService{
         $listas = $smtm->fetchAll(PDO::FETCH_OBJ);
         return empty($listas);
     }
+    public function pegar_id_acertos_erros(){
+        $query = 'SELECT id_materia,id_simulado, acertos,erros from tb_user_materia where id_usuario = ? and id_materia = ?';
+        $smtm = $this->conexao->prepare($query);
+        $smtm->bindValue(1, $this->materia->__get('id_usuario'));
+        $smtm->bindValue(2, $this->materia->__get('id_materia'));
+        $smtm->execute();
+        $listas = $smtm->fetchAll(PDO::FETCH_OBJ);
+        return $listas;
+    }
+
+    //aqui é usado para pegar os nomes de matérias e simulados
+    public function pegar_nomes($ids){
+        $nomes = [];
+        $query = 'SELECT nome_simulado from tb_simulados where id_simulado = ?';
+        $smtm = $this->conexao->prepare($query);
+        $smtm->bindValue(1, $ids->id_simulado);
+        $smtm->execute();
+        $nome_simulado = $smtm->fetch(PDO::FETCH_OBJ);
+        $query = 'SELECT nome_materia from tb_materias where id_materia = ?';
+        $smtm= $this->conexao->prepare($query);
+        $smtm->bindValue(1, $ids->id_materia);
+        $smtm->execute();
+        $nome_materia = $smtm->fetch(PDO::FETCH_OBJ);
+        $nomes['simulado'] = $nome_simulado->nome_simulado;
+        $nomes['materia'] = $nome_materia->nome_materia;
+        $nomes['acertos']=$ids->acertos;
+        $nomes['erros']=$ids->erros;
+        return $nomes;
+    }
+    public function pegar_ids($acao){
+        //id simulado 
+        if($acao ==1){
+            $query = 'SELECT id_simulado from tb_simulados where nome_simulado = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $_GET['simulado']);
+            $smtm->execute();
+            $id_simulado = $smtm->fetch(PDO::FETCH_OBJ)->id_simulado;
+            //id materias
+            $query = 'SELECT id_materia from tb_materias where nome_materia = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $_GET['materia']);
+            $smtm->execute();
+            $id_materia = $smtm->fetch(PDO::FETCH_OBJ)->id_materia;
+            //pegar o id_user_materias 
+            $query = 'SELECT id_user_materia from tb_user_materia where id_simulado = ? and id_materia = ? and id_usuario = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $id_simulado);
+            $smtm->bindValue(2, $id_materia);
+            $smtm->bindValue(3, $_GET['id']);
+            $smtm->execute();
+            $id_user_materia = $smtm->fetch(PDO::FETCH_OBJ)->id_user_materia;
+            return $id_user_materia;
+        }
+    }
 }

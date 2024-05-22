@@ -44,40 +44,6 @@ INSERT INTO `tb_materias` VALUES (1,'Física'),(2,'Matematica'),(3,'Interpretaç
 UNLOCK TABLES;
 
 --
--- Table structure for table `tb_materias_observacoes`
---
-
-DROP TABLE IF EXISTS `tb_materias_observacoes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tb_materias_observacoes` (
-  `id_user_materia` int(11) NOT NULL,
-  `id_observacao` int(11) NOT NULL,
-  KEY `id_user_materia` (`id_user_materia`),
-  KEY `id_observacao` (`id_observacao`),
-  CONSTRAINT `tb_materias_observacoes_ibfk_1` FOREIGN KEY (`id_user_materia`) REFERENCES `tb_user_materia` (`id_user_materia`),
-  CONSTRAINT `tb_materias_observacoes_ibfk_2` FOREIGN KEY (`id_observacao`) REFERENCES `tb_observacao` (`id_observacao`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tb_materias_simulados`
---
-
-DROP TABLE IF EXISTS `tb_materias_simulados`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tb_materias_simulados` (
-  `id_user_materia` int(11) NOT NULL,
-  `id_simulado` int(11) NOT NULL,
-  KEY `id_user_materia` (`id_user_materia`),
-  KEY `id_simulado` (`id_simulado`),
-  CONSTRAINT `tb_materias_simulados_ibfk_1` FOREIGN KEY (`id_user_materia`) REFERENCES `tb_user_materia` (`id_user_materia`),
-  CONSTRAINT `tb_materias_simulados_ibfk_2` FOREIGN KEY (`id_simulado`) REFERENCES `tb_simulados` (`id_simulado`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `tb_observacao`
 --
 
@@ -87,8 +53,11 @@ DROP TABLE IF EXISTS `tb_observacao`;
 CREATE TABLE `tb_observacao` (
   `observacao` text NOT NULL,
   `id_observacao` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id_observacao`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `tb_user_materia` int(11) NOT NULL,
+  PRIMARY KEY (`id_observacao`),
+  KEY `tb_user_materia` (`tb_user_materia`),
+  CONSTRAINT `tb_observacao_ibfk_1` FOREIGN KEY (`tb_user_materia`) REFERENCES `tb_user_materia` (`id_user_materia`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,6 +73,7 @@ CREATE TABLE `tb_simulados` (
   PRIMARY KEY (`id_simulado`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 LOCK TABLES `tb_simulados` WRITE;
 /*!40000 ALTER TABLE `tb_simulados` DISABLE KEYS */;
@@ -132,7 +102,7 @@ CREATE TABLE `tb_user_materia` (
   CONSTRAINT `tb_user_materia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `tb_usuario` (`id_usuario`),
   CONSTRAINT `tb_user_materia_ibfk_2` FOREIGN KEY (`id_materia`) REFERENCES `tb_materias` (`id_materia`),
   CONSTRAINT `tb_user_materia_ibfk_3` FOREIGN KEY (`id_simulado`) REFERENCES `tb_simulados` (`id_simulado`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,7 +118,7 @@ CREATE TABLE `tb_usuario` (
   `email` varchar(50) NOT NULL,
   `senha` varchar(25) NOT NULL,
   PRIMARY KEY (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -160,4 +130,4 @@ CREATE TABLE `tb_usuario` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-21 15:25:48
+-- Dump completed on 2024-05-21 21:21:26
