@@ -93,7 +93,9 @@ class MateriaService{
             $smtm->bindValue(1, $_GET['materia']);
             $smtm->execute();
             $id_materia = $smtm->fetch(PDO::FETCH_OBJ)->id_materia;
-            //pegar o id_user_materias 
+            echo $id_simulado;
+            echo $id_materia;
+            //pegar o id_user_materias
             $query = 'SELECT id_user_materia from tb_user_materia where id_simulado = ? and id_materia = ? and id_usuario = ?';
             $smtm = $this->conexao->prepare($query);
             $smtm->bindValue(1, $id_simulado);
@@ -101,7 +103,33 @@ class MateriaService{
             $smtm->bindValue(3, $_GET['id']);
             $smtm->execute();
             $id_user_materia = $smtm->fetch(PDO::FETCH_OBJ)->id_user_materia;
-            return $id_user_materia;
+            return $id_user_materia;            
+        }else if($acao ==2){
+            $query = 'SELECT id_materia from tb_materias where nome_materia = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $_GET['materia']);
+            $smtm->execute();
+            $id_materia = $smtm->fetch(PDO::FETCH_OBJ)-> id_materia;
+            return $id_materia;
+        }
+    }
+    public function editar($acerto_erro){
+        if($acerto_erro == 'acertos'){
+            $query = 'UPDATE tb_user_materia set acertos = ?  where id_usuario = ? and id_simulado = ? and id_materia = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $this->materia->acertos);
+            $smtm->bindValue(2, $this->materia->id_usuario);
+            $smtm->bindValue(3, $this->materia->id_simulado);
+            $smtm->bindValue(4, $this->materia->id_materia);
+            return $smtm->execute();
+        }else if($acerto_erro == 'erros'){
+            $query = 'UPDATE tb_user_materia set erros = ?  where id_usuario = ? and id_simulado = ? and id_materia = ?';
+            $smtm = $this->conexao->prepare($query);
+            $smtm->bindValue(1, $this->materia->__get('erros'));
+            $smtm->bindValue(2, $this->materia->__get('id_usuario'));
+            $smtm->bindValue(3, $this->materia->__get('id_simulado'));
+            $smtm->bindValue(4, $this->materia->__get('id_materia'));
+            return $smtm->execute();
         }
     }
 }

@@ -1,14 +1,19 @@
 <?php
 session_start();
+$id = $_SESSION['id'];
 if($_SESSION['codigo'] != 'autorizado'){
     header('location:index.php?erro=acesso');
 }
 if(isset($_GET['materia'])){
-    $materia = $_GET['materia'];
+    $lista_materias = ['Física','Matematica','Interpretação textual','Química','Geografia','História', 'Sociologia','Literatura','Inglês','Filosofia','Biologia'];
+    if(in_array($_GET['materia'], $lista_materias)){
+        $materia = $_GET['materia'];
+    }else{
+        header('location:colocar_notas.php?id='.$id);
+    }
 }else{
     $materia ='Física';
 }
-$id = $_SESSION['id'];
 ?>
 
 <html>
@@ -17,8 +22,35 @@ $id = $_SESSION['id'];
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" href="style.css">
         <meta charset="utf-8">
-        <title>Colocar notas</title>
+        <script src="https://kit.fontawesome.com/1476decda1.js" crossorigin="anonymous"></script>
 
+        <title>Colocar notas</title>
+        <script>
+            function editar(materia,id_usuario,id_simulado,acerto_erro,erros,acertos,key){
+                console.log(key)
+                console.log(acerto_erro)
+               //form
+               let form = document.createElement('form')
+                form.action = `materia_controller.php?acao=editar&id_usuario=${id_usuario}&simulado=${id_simulado}&materia=${materia}&acertoOuErro=${acerto_erro}&acertos=${acertos}&erros=${erros}`
+                form.method='post'
+                form.className='row'
+                //input
+                let input =document.createElement('input')
+                input.name='novo_valor'
+                input.type = 'number'
+                input.style = 'width:60px'
+                //botão
+                let button = document.createElement('button')
+                button.className = 'btn btn-success'
+                button.innerHTML = 'atualizar'
+                button.type ='submit'
+                form.appendChild(input)
+                form.appendChild(button)
+                document.getElementById(`valor-${acerto_erro}-${key}`).innerHTML = ''
+                document.getElementById(`valor-${acerto_erro}-${key}`).appendChild(form)
+                input.focus()
+            }
+        </script>
     </head>
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
@@ -70,6 +102,9 @@ $id = $_SESSION['id'];
                 <?if(isset($_GET['sucesso']) && $_GET['sucesso'] == 'sucessoRegistro'){?>
                     <p class="text-success">Conseguimos registrar a matéria</p>
                 <?}?>
+                <?if(isset($_GET['erro']) && $_GET['erro'] == 'Errobanco'){?>
+                    <p class="text-danger">Aconteceu algum erro ao registrar. Por favor tente mais tarde </p>
+                <?}?>
                 <button class="btn btn-success" type="submit">Adicionar</button>
             </form>
             <?}?>
@@ -101,12 +136,20 @@ $id = $_SESSION['id'];
                     $smtm->bindValue(2,$_GET['simulado']);
                     $smtm->execute();
                     $arquivos = $smtm->fetchAll(PDO::FETCH_OBJ);
-                    foreach($arquivos as $valor){?>
+                    foreach($arquivos as $key=>$valor){?>
                     <tr>
-                        <td><?=$valor->nome_simulado?> </td>
+                        <td><?=$valor->nome_simulado?></td>
                         <td><?=$valor->nome_materia?></td>
-                        <td><?=$valor->acertos?></td>
-                        <td><?=$valor->erros?></td>
+                        <td id="valor-acertos-<?=$key?>"><?=$valor->acertos?>
+                            <button class="btn btn-sm" onclick="editar('<?=$valor->nome_materia?>', <?=$_GET['id']?>, <?=$_GET['simulado']?>,'acertos',<?=$valor->acertos?>, <?=$valor->erros?>,<?=$key?>)">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button><div id="update"></div>
+                        </td>
+                        <td id="valor-erros-<?=$key?>"><?=$valor->erros?>
+                            <button class='btn btn-outline' onclick="editar('<?=$valor->nome_materia?>', <?=$_GET['id']?>, <?=$_GET['simulado']?>,'erros',<?=$valor->acertos?>, <?=$valor->erros?>,<?=$key?>)">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        </td>
                     </tr>
                     <?}?>
                 </tbody>

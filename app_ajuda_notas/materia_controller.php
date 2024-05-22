@@ -10,7 +10,6 @@ $acao = isset($_GET['acao'])?$_GET['acao']:$acao;
 // fazer a página de colocar notas, onde o usuário vai ir colocando as suas notas, e a cada atualizada ele vai 
 // mudando qual matéria ele está falando 
 // tem que melhorar isso: 
-print_r($_POST);
 if($acao =='adicionar'){
     if($_POST['simulado'] !=0 && $_POST['acertos'] !=null && $_POST['erros'] !=null){
         $lista_materias = ['Física','Matematica','Interpretação textual','Química','Geografia','História', 'Sociologia','Literatura','Inglês','Filosofia','Biologia'];
@@ -41,21 +40,27 @@ if($acao =='adicionar'){
     //eu quero: acertos e erros de cada simulado em cada matéria e dps é só fazer a relação deles bonitinho com os nomes e etc
     
     //1°passo:  pegar o id_materia, id_simulado, acertos, erros
-    if(isset($_POST['id_materia'])){
+    if(isset($_POST['id_materia'])&&$_POST['id_materia'] != 0){
         $materia = new Materia;
         $materia->__set('id_usuario',$_GET['id'])->
         __set('id_materia',$_POST['id_materia']);
         $conexao = new Conexao;
         $materiaService = new MateriaService($materia, $conexao);
         $ids_necessarios= $materiaService->pegar_id_acertos_erros();
+        $ids1 = [];
         $nomes = [];
         //isso aqui vai retornar todos as matérias com seus respectivos nosmes
         foreach($ids_necessarios as $ids){
             $nomes[]=$materiaService->pegar_nomes($ids);
+            $ids1[]=$ids->id_simulado;
         }
-        session_start();
         $_SESSION['infos'] = $nomes;
-        header('location:planejamento.php?acao=executar&id_simulado=');
+        $_SESSION['ids1'] = $ids1; 
+        $_SESSION['materia']= $_POST['id_materia'];
+        // echo $_SESSION['materia']['id_materia'];
+        header('location:planejamento.php?acao=executar');
+    }else{
+        header('location:planejamento.php?erro=preenchimentoMateria');
     }
 
 }else if($acao == 'adicionar_obs'){
@@ -74,11 +79,41 @@ if($acao =='adicionar'){
         $conexao = new Conexao;
         $observacaoService = new ObservacaoService($observacao, $conexao);
         if($observacaoService->inserir()){
-            header('location:planejamento.php?id='.$id);
+            header('location:planejamento.php?id='.$id.'&materia='.$_GET['materia']);
         }else{
             header('location:planejamento.php?id='.$id.'&acao=erro');
         }
     }else{
         header('location:planejamento.php?id='.$id.'&acao=erro');
+    }
+}else if($acao=='marcarConcluida'){
+    $observacao = new Observacao;
+    $observacao->__set('tb_user_materia', $_GET['id'])->
+    __set('observacao',$_GET['text_observacao']);
+    $conexao = new Conexao;
+    $observacaoService = new ObservacaoService($observacao, $conexao);
+    if($observacaoService->remover()){
+        header('location:planejamento.php?id='.$id.'&materia='.$_GET['materia']);
+    }
+}else if($acao=='editar'){
+    if($_POST['novo_valor'] !=0){
+        $materia = new Materia;
+        $conexao = new Conexao;
+        $materia->__set('nome_materia', $_GET['materia']);
+        $materiaService = new MateriaService($materia, $conexao);
+        $id_materia = $materiaService->pegar_ids(2);
+        $materia = new Materia;
+        $materia->__set('id_materia', $id_materia)->
+        __set('id_usuario', $_GET['id_usuario'])->
+        __set('acertos', $_POST['novo_valor'])->
+        __set('erros', $_POST['novo_valor'])->
+        __set('id_simulado',$_GET['simulado']);
+        print_r($materia);
+        $materiaService = new MateriaService($materia,$conexao);
+        if($materiaService->editar($_GET['acertoOuErro'])){
+            header('location:colocar_notas.php?id='.$id.'&simulado='.$_GET['simulado']);
+        }else{
+            header('location:colocar_notas.php?id='.$id.'&erro=Errobanco');
+        }
     }
 }
